@@ -1,0 +1,12 @@
+{
+  "name": "mojicon",
+  "version": "1.0.0",
+  "description": "Generate various icons with text and symbols from Google Fonts",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "tnantoka",
+  "license": "MIT"
+}
