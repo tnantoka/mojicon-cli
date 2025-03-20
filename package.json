@@ -4,9 +4,14 @@
   "description": "Generate various icons with text and symbols from Google Fonts",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [],
   "author": "tnantoka",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "typescript": "^5.8.2"
+  }
 }
