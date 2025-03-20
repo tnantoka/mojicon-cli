@@ -1,5 +1,7 @@
 node_modules
 src
 coverage
-jest.config.js
+jest.config.json
 tsconfig.json
+.prettierrc.json
+eslint.config.mjs
