@@ -21,8 +21,14 @@ describe('main', () => {
 
       expect(generateIcon).toHaveBeenCalledWith({
         output: './icon.png',
-        size: 512,
+        width: 512,
         backgroundColor: '#FFFFFF',
+        font: 'Roboto',
+        fontSize: 256,
+        height: 512,
+        letter: 'A',
+        textColor: '#000000',
+        variant: 'Regular',
         backgroundAlpha: 1.0,
       });
     } finally {
@@ -36,19 +42,37 @@ describe('main', () => {
       'index.js',
       '--output',
       'custom.png',
-      '--size',
+      '--width',
+      '128',
+      '--height',
       '128',
       '--bg-color',
       '#FF0000',
       '--bg-alpha',
       '0.5',
+      '--font',
+      'Roboto Condensed',
+      '--variant',
+      'Italic',
+      '--text-color',
+      '#00FF00',
+      '--letter',
+      'B',
+      '--font-size',
+      '64',
     ]);
 
     expect(generateIcon).toHaveBeenCalledWith({
       output: 'custom.png',
-      size: 128,
+      width: 128,
+      height: 128,
       backgroundColor: '#FF0000',
       backgroundAlpha: 0.5,
+      font: 'Roboto Condensed',
+      variant: 'Italic',
+      textColor: '#00FF00',
+      letter: 'B',
+      fontSize: 64,
     });
   });
 

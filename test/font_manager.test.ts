@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 
 import { findFont } from '../src/font_manager';
 
@@ -7,12 +8,16 @@ jest.mock('os', () => ({
   homedir: jest.fn(() => tmpdir),
 }));
 
+const roboto = fs.readFileSync(
+  path.join(__dirname, 'fixtures', 'Roboto-Regular.ttf'),
+);
+
 jest.mock('https', () => ({
   get: jest.fn((url, cb) => {
     cb({
       on: jest.fn((event, cb) => {
         if (event === 'data') {
-          cb('data');
+          cb(roboto);
         } else if (event === 'end') {
           cb();
         }
@@ -27,7 +32,7 @@ describe('findFont', () => {
   it('returns default font if not found', async () => {
     const font = await findFont('Unknown', 'Unknown');
     expect(font).toStrictEqual({
-      label: 'Roboto (Regular)',
+      label: 'Roboto-Regular',
       path: `${tmpdir}/.mojicon/fonts/Roboto-Regular.ttf`,
     });
   });
@@ -35,7 +40,7 @@ describe('findFont', () => {
   it('returns matched font with matched variant', async () => {
     const font = await findFont('roboto condensed', 'italic');
     expect(font).toStrictEqual({
-      label: 'Roboto Condensed (Italic)',
+      label: 'RobotoCondensed-Italic',
       path: `${tmpdir}/.mojicon/fonts/RobotoCondensed-Italic.ttf`,
     });
   });
@@ -43,7 +48,7 @@ describe('findFont', () => {
   it('returns matched font with default variant', async () => {
     const font = await findFont('roboto condensed', 'unknown');
     expect(font).toStrictEqual({
-      label: 'Roboto Condensed (Regular)',
+      label: 'RobotoCondensed-Regular',
       path: `${tmpdir}/.mojicon/fonts/RobotoCondensed-Regular.ttf`,
     });
   });
