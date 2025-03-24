@@ -59,7 +59,19 @@ export async function main(args: string[] = process.argv): Promise<void> {
         'Font size in pixels',
         DEFAULT_ICON_OPTIONS.fontSize.toString(),
       )
-      .option('-c, --code [code]', 'Font icon code', DEFAULT_ICON_OPTIONS.code);
+      .option('-c, --code [code]', 'Font icon code', DEFAULT_ICON_OPTIONS.code)
+      .option('-x, --x [x]', 'X position', DEFAULT_ICON_OPTIONS.x.toString())
+      .option('-y, --y [y]', 'Y position', DEFAULT_ICON_OPTIONS.y.toString())
+      .option(
+        '-r, --radius [radius]',
+        'Corner radius',
+        DEFAULT_ICON_OPTIONS.radius.toString(),
+      )
+      .option(
+        '-a, --angle [angle]',
+        'Rotation angle in degrees',
+        DEFAULT_ICON_OPTIONS.angle.toString(),
+      );
 
     program.parse(args);
     const cmdOptions = program.opts();
@@ -81,6 +93,10 @@ export async function main(args: string[] = process.argv): Promise<void> {
       letter: cmdOptions.letter,
       fontSize: parseInt(cmdOptions.fontSize),
       code: cmdOptions.code,
+      x: parseInt(cmdOptions.x),
+      y: parseInt(cmdOptions.y),
+      radius: parseInt(cmdOptions.radius),
+      angle: parseInt(cmdOptions.angle),
     };
 
     await generateIcon(iconOptions);

@@ -54,6 +54,14 @@ describe('main', () => {
       '64',
       '--code',
       'search',
+      '--x',
+      '10',
+      '--y',
+      '20',
+      '--radius',
+      '5',
+      '--angle',
+      '90',
     ]);
 
     expect(generateIcon).toHaveBeenCalledWith({
@@ -68,6 +76,10 @@ describe('main', () => {
       letter: 'B',
       fontSize: 64,
       code: 'search',
+      x: 10,
+      y: 20,
+      radius: 5,
+      angle: 90,
     });
   });
 

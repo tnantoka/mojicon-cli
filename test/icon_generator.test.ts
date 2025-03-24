@@ -87,7 +87,11 @@ describe('generateIcon', () => {
       font: 'roboto condensed',
       variant: 'italic',
       textColor: '#00FF00',
-      letter: 'B',
+      letter: 'b',
+      x: 10,
+      y: 5,
+      radius: 16,
+      angle: 45,
     };
 
     await generateIcon(options);
