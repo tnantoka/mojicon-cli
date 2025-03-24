@@ -1,7 +1,11 @@
 import { main } from '../src/index';
 
 import { generateIcon } from '../src/icon_generator';
-import { DEFAULT_CODE_FONT, DEFAULT_ICON_OPTIONS } from '../src/options';
+import {
+  DEFAULT_CODE_FONT,
+  DEFAULT_ICON_OPTIONS,
+  DEFAULT_ITEM_OPTIONS,
+} from '../src/options';
 
 jest.mock('../src/icon_generator', () => ({
   generateIcon: jest.fn().mockResolvedValue(undefined),
@@ -70,16 +74,20 @@ describe('main', () => {
       height: 128,
       backgroundColor: '#FF0000',
       backgroundAlpha: 0.5,
-      font: 'Roboto Condensed',
-      variant: 'Italic',
       textColor: '#00FF00',
-      letter: 'B',
-      fontSize: 64,
-      code: 'search',
-      x: 10,
-      y: 20,
       radius: 5,
-      angle: 90,
+      items: [
+        {
+          letter: 'B',
+          code: 'search',
+          font: 'Roboto Condensed',
+          fontSize: 64,
+          variant: 'Italic',
+          x: 10,
+          y: 20,
+          angle: 90,
+        },
+      ],
     });
   });
 
@@ -88,8 +96,13 @@ describe('main', () => {
 
     expect(generateIcon).toHaveBeenCalledWith({
       ...DEFAULT_ICON_OPTIONS,
-      code: 'search',
-      font: DEFAULT_CODE_FONT,
+      items: [
+        {
+          ...DEFAULT_ITEM_OPTIONS,
+          code: 'search',
+          font: DEFAULT_CODE_FONT,
+        },
+      ],
     });
   });
 

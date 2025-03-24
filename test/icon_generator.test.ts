@@ -3,7 +3,11 @@ import path from 'path';
 import os from 'os';
 
 import { generateIcon } from '../src/icon_generator';
-import { IconOptions, DEFAULT_ICON_OPTIONS } from '../src/options';
+import {
+  IconOptions,
+  DEFAULT_ICON_OPTIONS,
+  DEFAULT_ITEM_OPTIONS,
+} from '../src/options';
 
 jest.mock('os', () => ({
   ...jest.requireActual('os'),
@@ -60,7 +64,12 @@ describe('generateIcon', () => {
       output: testOutputPath,
       width: 64,
       height: 64,
-      fontSize: 48,
+      items: [
+        {
+          ...DEFAULT_ITEM_OPTIONS,
+          fontSize: 48,
+        },
+      ],
     };
 
     await generateIcon(options);
@@ -81,17 +90,22 @@ describe('generateIcon', () => {
       output: testOutputPath,
       width: 32,
       height: 32,
-      fontSize: 24,
       backgroundColor: '#F00',
       backgroundAlpha: 0.5,
-      font: 'roboto condensed',
-      variant: 'italic',
       textColor: '#00FF00',
-      letter: 'b',
-      x: 10,
-      y: 5,
       radius: 16,
-      angle: 45,
+      items: [
+        {
+          ...DEFAULT_ITEM_OPTIONS,
+          fontSize: 24,
+          font: 'roboto condensed',
+          variant: 'italic',
+          letter: 'b',
+          x: 10,
+          y: 5,
+          angle: 45,
+        },
+      ],
     };
 
     await generateIcon(options);
@@ -110,9 +124,14 @@ describe('generateIcon', () => {
       output: testOutputPath,
       width: 64,
       height: 64,
-      fontSize: 48,
-      font: 'Material Icons',
-      code: 'search',
+      items: [
+        {
+          ...DEFAULT_ITEM_OPTIONS,
+          font: 'Material Icons',
+          fontSize: 48,
+          code: 'search',
+        },
+      ],
     };
 
     await generateIcon(options);
@@ -131,9 +150,14 @@ describe('generateIcon', () => {
       output: testOutputPath,
       width: 64,
       height: 64,
-      fontSize: 48,
-      font: 'Material Icons',
-      code: 'invalid',
+      items: [
+        {
+          ...DEFAULT_ITEM_OPTIONS,
+          font: 'Material Icons',
+          fontSize: 48,
+          code: 'invalid',
+        },
+      ],
     };
 
     await generateIcon(options);
@@ -145,4 +169,6 @@ describe('generateIcon', () => {
 
     expect(Buffer.compare(generatedImage, expectedImage)).toBe(0);
   });
+
+  it('generate icon with json', async () => {});
 });
