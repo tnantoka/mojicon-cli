@@ -1,6 +1,7 @@
 import { main } from '../src/index';
 
 import { generateIcon } from '../src/icon_generator';
+import { DEFAULT_CODE_FONT, DEFAULT_ICON_OPTIONS } from '../src/options';
 
 jest.mock('../src/icon_generator', () => ({
   generateIcon: jest.fn().mockResolvedValue(undefined),
@@ -20,16 +21,7 @@ describe('main', () => {
       await main();
 
       expect(generateIcon).toHaveBeenCalledWith({
-        output: './icon.png',
-        width: 512,
-        backgroundColor: '#FFFFFF',
-        font: 'Roboto',
-        fontSize: 256,
-        height: 512,
-        letter: 'A',
-        textColor: '#000000',
-        variant: 'Regular',
-        backgroundAlpha: 1.0,
+        ...DEFAULT_ICON_OPTIONS,
       });
     } finally {
       process.argv = origArgv;
@@ -60,6 +52,8 @@ describe('main', () => {
       'B',
       '--font-size',
       '64',
+      '--code',
+      'search',
     ]);
 
     expect(generateIcon).toHaveBeenCalledWith({
@@ -73,6 +67,17 @@ describe('main', () => {
       textColor: '#00FF00',
       letter: 'B',
       fontSize: 64,
+      code: 'search',
+    });
+  });
+
+  it('calls generateIcon with code options', async () => {
+    await main(['node', 'index.js', '--code', 'search']);
+
+    expect(generateIcon).toHaveBeenCalledWith({
+      ...DEFAULT_ICON_OPTIONS,
+      code: 'search',
+      font: DEFAULT_CODE_FONT,
     });
   });
 

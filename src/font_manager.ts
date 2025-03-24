@@ -4,24 +4,29 @@ import path from 'path';
 import https from 'https';
 
 import webFonts from './fonts/webfonts.json';
+import iconFonts from './fonts/iconfonts.json';
 
 export const roboto = webFonts.find((font) => font.family === 'Roboto')!;
+export const materialIcons = iconFonts[0];
 
 interface FoundFont {
   label: string;
   path: string;
+  codepoints: { name: string; codepoint: string }[];
 }
 
 export const findFont = async (
   name: string,
   variant: string,
+  withCode: boolean,
 ): Promise<FoundFont> => {
-  let foundItem = roboto;
-  let foundFamily = 'Roboto';
+  const fonts = withCode ? iconFonts : webFonts;
+  let foundItem = withCode ? materialIcons : roboto;
+  let foundFamily = withCode ? 'Material Icons' : 'Roboto';
   let foundVariant = 'Regular';
   let foundFile = foundItem.files['regular']!;
 
-  const item = webFonts.find(
+  const item = fonts.find(
     (font) => font.family.toLowerCase() === name.toLowerCase(),
   );
   if (item) {
@@ -44,7 +49,8 @@ export const findFont = async (
   const label = `${foundFamily.replace(/\s/g, '')}-${foundVariant}`;
   const foundFont = {
     label,
-    path: path.join(getFontsDir(), `${label}.ttf`),
+    path: path.join(getFontsDir(), `${label}.${foundFile.split('.').pop()}`),
+    codepoints: foundItem.codepoints,
   };
 
   if (!fs.existsSync(foundFont.path)) {

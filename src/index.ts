@@ -2,7 +2,11 @@
 
 import { Command } from 'commander';
 
-import { IconOptions, DEFAULT_ICON_OPTIONS } from './options';
+import {
+  IconOptions,
+  DEFAULT_ICON_OPTIONS,
+  DEFAULT_CODE_FONT,
+} from './options';
 import { generateIcon } from './icon_generator';
 
 export async function main(args: string[] = process.argv): Promise<void> {
@@ -54,10 +58,16 @@ export async function main(args: string[] = process.argv): Promise<void> {
         '-s, --font-size [size]',
         'Font size in pixels',
         DEFAULT_ICON_OPTIONS.fontSize.toString(),
-      );
+      )
+      .option('-c, --code [code]', 'Font icon code', DEFAULT_ICON_OPTIONS.code);
 
     program.parse(args);
     const cmdOptions = program.opts();
+
+    const font =
+      cmdOptions.code && cmdOptions.font === DEFAULT_ICON_OPTIONS.font
+        ? DEFAULT_CODE_FONT
+        : cmdOptions.font;
 
     const iconOptions: IconOptions = {
       output: cmdOptions.output,
@@ -65,11 +75,12 @@ export async function main(args: string[] = process.argv): Promise<void> {
       height: parseInt(cmdOptions.height ?? cmdOptions.width),
       backgroundColor: cmdOptions.bgColor,
       backgroundAlpha: parseFloat(cmdOptions.bgAlpha),
-      font: cmdOptions.font,
+      font,
       variant: cmdOptions.variant,
       textColor: cmdOptions.textColor,
       letter: cmdOptions.letter,
       fontSize: parseInt(cmdOptions.fontSize),
+      code: cmdOptions.code,
     };
 
     await generateIcon(iconOptions);

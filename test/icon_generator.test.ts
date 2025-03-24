@@ -16,13 +16,22 @@ const roboto = fs.readFileSync(
 const robotoCondensed = fs.readFileSync(
   path.join(__dirname, 'fixtures', 'RobotoCondensed-Italic.ttf'),
 );
+const materialIcons = fs.readFileSync(
+  path.join(__dirname, 'fixtures', 'MaterialIcons-Regular.ttf'),
+);
 
 jest.mock('https', () => ({
   get: jest.fn((url, cb) => {
     cb({
       on: jest.fn((event, cb) => {
         if (event === 'data') {
-          cb(url.includes('robotocondensed') ? robotoCondensed : roboto);
+          if (url.includes('materialicons')) {
+            cb(materialIcons);
+          } else if (url.includes('robotocondensed')) {
+            cb(robotoCondensed);
+          } else {
+            cb(roboto);
+          }
         } else if (event === 'end') {
           cb();
         }
@@ -31,7 +40,9 @@ jest.mock('https', () => ({
   }),
 }));
 
-fs.rmdirSync(`${os.tmpdir()}/.mojicon`, { recursive: true });
+if (fs.existsSync(`${os.tmpdir()}/.mojicon`)) {
+  fs.rmSync(`${os.tmpdir()}/.mojicon`, { recursive: true });
+}
 
 describe('generateIcon', () => {
   const testOutputPath = path.join(os.tmpdir(), 'test.png');
@@ -39,7 +50,7 @@ describe('generateIcon', () => {
 
   afterEach(() => {
     if (fs.existsSync(testOutputPath)) {
-      fs.unlinkSync(testOutputPath);
+      fs.rmSync(testOutputPath);
     }
   });
 
@@ -85,6 +96,48 @@ describe('generateIcon', () => {
     const expectedImage = fs.readFileSync(
       path.join(fixturesDir, 'custom_styles.png'),
     );
+
+    expect(Buffer.compare(generatedImage, expectedImage)).toBe(0);
+  });
+
+  it('generate icon with code', async () => {
+    const options: IconOptions = {
+      ...DEFAULT_ICON_OPTIONS,
+      output: testOutputPath,
+      width: 64,
+      height: 64,
+      fontSize: 48,
+      font: 'Material Icons',
+      code: 'search',
+    };
+
+    await generateIcon(options);
+
+    expect(fs.existsSync(testOutputPath)).toBe(true);
+
+    const generatedImage = fs.readFileSync(testOutputPath);
+    const expectedImage = fs.readFileSync(path.join(fixturesDir, 'search.png'));
+
+    expect(Buffer.compare(generatedImage, expectedImage)).toBe(0);
+  });
+
+  it('generate default code icon with invalid code', async () => {
+    const options: IconOptions = {
+      ...DEFAULT_ICON_OPTIONS,
+      output: testOutputPath,
+      width: 64,
+      height: 64,
+      fontSize: 48,
+      font: 'Material Icons',
+      code: 'invalid',
+    };
+
+    await generateIcon(options);
+
+    expect(fs.existsSync(testOutputPath)).toBe(true);
+
+    const generatedImage = fs.readFileSync(testOutputPath);
+    const expectedImage = fs.readFileSync(path.join(fixturesDir, '10k.png'));
 
     expect(Buffer.compare(generatedImage, expectedImage)).toBe(0);
   });

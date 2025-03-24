@@ -9,6 +9,7 @@ export interface IconOptions {
   textColor: string;
   letter: string;
   fontSize: number;
+  code: string;
 }
 
 export const DEFAULT_ICON_OPTIONS: IconOptions = {
@@ -22,4 +23,7 @@ export const DEFAULT_ICON_OPTIONS: IconOptions = {
   textColor: '#000000',
   letter: 'A',
   fontSize: 256,
+  code: '',
 };
+
+export const DEFAULT_CODE_FONT = 'Material Icons';

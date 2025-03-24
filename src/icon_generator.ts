@@ -6,7 +6,7 @@ import { parseColor } from './color_parser';
 import { findFont } from './font_manager';
 
 export const generateIcon = async (options: IconOptions): Promise<void> => {
-  const font = await findFont(options.font, options.variant);
+  const font = await findFont(options.font, options.variant, !!options.code);
   GlobalFonts.registerFromPath(font.path, font.label);
 
   const canvas = createCanvas(options.width, options.height);
@@ -19,7 +19,19 @@ export const generateIcon = async (options: IconOptions): Promise<void> => {
   ctx.fillStyle = options.textColor;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(options.letter, options.width / 2, options.height / 2);
+
+  ctx.translate(options.width / 2, options.height / 2);
+
+  if (options.code) {
+    const codepoint = (
+      font.codepoints.find((c) => c.name === options.code) ?? font.codepoints[0]
+    ).codepoint;
+    const charCode = parseInt(codepoint, 16);
+    const text = String.fromCodePoint(charCode);
+    ctx.fillText(text, 0, 0);
+  } else {
+    ctx.fillText(options.letter, 0, 0);
+  }
 
   const buffer = canvas.toBuffer('image/png');
   fs.writeFileSync(options.output, buffer);

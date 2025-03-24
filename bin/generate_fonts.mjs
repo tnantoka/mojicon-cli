@@ -1,4 +1,4 @@
-/* global console, process */
+/* global process */
 
 import https from 'https';
 import fs from 'fs';
@@ -42,22 +42,26 @@ const downloadRawFiles = async () => {
       materialIcons: MATERIAL_ICONS.map((family) => {
         const filename = family.toLowerCase().replace(/\s/g, '_');
         return {
-          css: fs.readFileSync(`./tmp/${filename}.css`),
-          codepoints: fs.readFileSync(`./tmp/${filename}.codepoints`),
+          family,
+          css: fs.readFileSync(`./tmp/${filename}.css`, 'utf8'),
+          codepoints: fs.readFileSync(`./tmp/${filename}.codepoints`, 'utf8'),
         };
       }),
     };
   }
 
-  const webFonts = await download(
-    `https://www.googleapis.com/webfonts/v1/webfonts?key=${KEY}`,
-    'webfonts.json',
+  const webFonts = JSON.parse(
+    await download(
+      `https://www.googleapis.com/webfonts/v1/webfonts?key=${KEY}`,
+      'webfonts.json',
+    ),
   );
 
   const materialIcons = await Promise.all(
     MATERIAL_ICONS.map(async (family) => {
       const filename = family.toLowerCase().replace(/\s/g, '_');
       return {
+        family,
         css: await download(
           `https://fonts.googleapis.com/css2?family=${family.replace(/\s/g, '+')}`,
           `${filename}.css`,
@@ -76,13 +80,38 @@ const downloadRawFiles = async () => {
 const main = async () => {
   const { webFonts, materialIcons } = await downloadRawFiles();
 
-  console.log(webFonts.items.length);
-  console.log(materialIcons.length);
-
-  // webFonts.itemsをsrc/fonts/webfonts.jsonに保存
   fs.writeFileSync(
     './src/fonts/webfonts.json',
-    JSON.stringify(webFonts.items, null, 2),
+    JSON.stringify(
+      webFonts.items.map((item) => ({ ...item, codepoints: [] })),
+      null,
+      2,
+    ),
+  );
+
+  const iconFonts = materialIcons.map((materialIcon) => {
+    const file = materialIcon.css.match(/url\((.+?)\)/)[1];
+    const codepoints = materialIcon.codepoints
+      .split('\n')
+      .filter((line) => line)
+      .map((line) => {
+        const [name, codepoint] = line.split(' ');
+        return { name, codepoint };
+      });
+
+    return {
+      family: materialIcon.family,
+      variants: ['regular'],
+      files: {
+        regular: file,
+      },
+      codepoints,
+    };
+  });
+
+  fs.writeFileSync(
+    './src/fonts/iconfonts.json',
+    JSON.stringify(iconFonts, null, 2),
   );
 };
 
