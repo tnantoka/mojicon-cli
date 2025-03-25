@@ -1,6 +1,6 @@
 export interface ItemOptions {
-  letter: string;
-  code: string;
+  mode: 'text' | 'icon';
+  label: string;
   font: string;
   fontSize: number;
   variant: string;
@@ -9,21 +9,24 @@ export interface ItemOptions {
   angle: number;
 }
 
-export interface IconOptions {
-  output: string;
+export interface RenderOptions {
   width: number;
   height: number;
+  textColor: string;
   backgroundColor: string;
   backgroundAlpha: number;
-  textColor: string;
   radius: number;
+  output: string;
   items: ItemOptions[];
 }
 
+export const DEFAULT_TEXT_FONT = 'Roboto';
+export const DEFAULT_ICON_FONT = 'Material Icons';
+
 export const DEFAULT_ITEM_OPTIONS: ItemOptions = {
-  letter: 'A',
-  code: '',
-  font: 'Roboto',
+  mode: 'text',
+  label: 'A',
+  font: DEFAULT_TEXT_FONT,
   fontSize: 256,
   variant: 'Regular',
   x: 0,
@@ -31,15 +34,13 @@ export const DEFAULT_ITEM_OPTIONS: ItemOptions = {
   angle: 0,
 };
 
-export const DEFAULT_ICON_OPTIONS: IconOptions = {
-  output: './icon.png',
+export const DEFAULT_RENDER_OPTIONS: RenderOptions = {
   width: 512,
   height: 512,
+  textColor: '#000000',
   backgroundColor: '#FFFFFF',
   backgroundAlpha: 1.0,
-  textColor: '#000000',
   radius: 0,
+  output: './icon.png',
   items: [DEFAULT_ITEM_OPTIONS],
 };
-
-export const DEFAULT_CODE_FONT = 'Material Icons';

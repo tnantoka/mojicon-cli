@@ -3,12 +3,13 @@
 import { Command } from 'commander';
 
 import {
-  IconOptions,
-  DEFAULT_ICON_OPTIONS,
-  DEFAULT_CODE_FONT,
+  RenderOptions,
+  DEFAULT_RENDER_OPTIONS,
   DEFAULT_ITEM_OPTIONS,
+  DEFAULT_TEXT_FONT,
+  DEFAULT_ICON_FONT,
 } from './options';
-import { generateIcon } from './icon_generator';
+import { renderImage } from './image_renderer';
 
 export async function main(args: string[] = process.argv): Promise<void> {
   try {
@@ -18,56 +19,62 @@ export async function main(args: string[] = process.argv): Promise<void> {
       .description(
         'Generate various icons with text and symbols from Google Fonts',
       )
-      .option(
-        '-o, --output [filename]',
-        'Output file path',
-        DEFAULT_ICON_OPTIONS.output,
-      )
+
+      // Global Options
       .option(
         '-w, --width [width]',
         'Icon width in pixels',
-        DEFAULT_ICON_OPTIONS.width.toString(),
+        DEFAULT_RENDER_OPTIONS.width.toString(),
       )
-      .option('-h, --height [height]', 'Icon height in pixels')
+      .option('-h, --height [height]', 'Icon height in pixels (default: width)')
+      .option(
+        '-c, --text-color [color]',
+        'Text color (#RRGGBB or #RGB format)',
+        DEFAULT_RENDER_OPTIONS.textColor,
+      )
       .option(
         '-b, --bg-color [color]',
-        'Background color (#RRGGBB format)',
-        DEFAULT_ICON_OPTIONS.backgroundColor,
+        'Background color (#RRGGBB or #RGB format)',
+        DEFAULT_RENDER_OPTIONS.backgroundColor,
       )
       .option(
         '--bg-alpha [alpha]',
         'Background transparency (0-1)',
-        DEFAULT_ICON_OPTIONS.backgroundAlpha.toString(),
-      )
-      .option('-f, --font [font]', 'Font name', DEFAULT_ITEM_OPTIONS.font)
-      .option(
-        '-v, --variant [variant]',
-        'Font variant',
-        DEFAULT_ITEM_OPTIONS.variant,
+        DEFAULT_RENDER_OPTIONS.backgroundAlpha.toString(),
       )
       .option(
-        '-t, --text-color [color]',
-        'Text color (#RRGGBB format)',
-        DEFAULT_ICON_OPTIONS.textColor,
+        '-r, --radius [radius]',
+        'Corner radius',
+        DEFAULT_RENDER_OPTIONS.radius.toString(),
       )
       .option(
-        '-l, --letter [letter]',
-        'Letter to display',
-        DEFAULT_ITEM_OPTIONS.letter,
+        '-o, --output [filename]',
+        'Output file path',
+        DEFAULT_RENDER_OPTIONS.output,
+      )
+
+      // Item options
+      .option('-m, --mode [mode]', 'Generation mode: text | icon', 'text')
+      .option(
+        '-l, --label [label]',
+        'Text label or icon name (default: "A" for text, "search" for icon)',
+      )
+      .option(
+        '-f, --font [font]',
+        `Font name (default: "${DEFAULT_TEXT_FONT}" for text, "${DEFAULT_ICON_FONT}" for icon)`,
       )
       .option(
         '-s, --font-size [size]',
         'Font size in pixels',
         DEFAULT_ITEM_OPTIONS.fontSize.toString(),
       )
-      .option('-c, --code [code]', 'Font icon code', DEFAULT_ITEM_OPTIONS.code)
+      .option(
+        '-v, --variant [variant]',
+        'Font variant',
+        DEFAULT_ITEM_OPTIONS.variant,
+      )
       .option('-x, --x [x]', 'X position', DEFAULT_ITEM_OPTIONS.x.toString())
       .option('-y, --y [y]', 'Y position', DEFAULT_ITEM_OPTIONS.y.toString())
-      .option(
-        '-r, --radius [radius]',
-        'Corner radius',
-        DEFAULT_ICON_OPTIONS.radius.toString(),
-      )
       .option(
         '-a, --angle [angle]',
         'Rotation angle in degrees',
@@ -77,23 +84,26 @@ export async function main(args: string[] = process.argv): Promise<void> {
     program.parse(args);
     const cmdOptions = program.opts();
 
+    const width = parseInt(cmdOptions.width);
+    const height = cmdOptions.height ? parseInt(cmdOptions.height) : width;
+    const label =
+      cmdOptions.label ?? (cmdOptions.mode === 'icon' ? 'search' : 'A');
     const font =
-      cmdOptions.code && cmdOptions.font === DEFAULT_ITEM_OPTIONS.font
-        ? DEFAULT_CODE_FONT
-        : cmdOptions.font;
+      cmdOptions.font ??
+      (cmdOptions.mode === 'icon' ? DEFAULT_ICON_FONT : DEFAULT_TEXT_FONT);
 
-    const iconOptions: IconOptions = {
-      output: cmdOptions.output,
-      width: parseInt(cmdOptions.width),
-      height: parseInt(cmdOptions.height ?? cmdOptions.width),
+    const renderOptions: RenderOptions = {
+      width,
+      height,
+      textColor: cmdOptions.textColor,
       backgroundColor: cmdOptions.bgColor,
       backgroundAlpha: parseFloat(cmdOptions.bgAlpha),
-      textColor: cmdOptions.textColor,
       radius: parseInt(cmdOptions.radius),
+      output: cmdOptions.output,
       items: [
         {
-          letter: cmdOptions.letter,
-          code: cmdOptions.code,
+          mode: cmdOptions.mode,
+          label,
           font,
           fontSize: parseInt(cmdOptions.fontSize),
           variant: cmdOptions.variant,
@@ -104,7 +114,7 @@ export async function main(args: string[] = process.argv): Promise<void> {
       ],
     };
 
-    await generateIcon(iconOptions);
+    await renderImage(renderOptions);
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);

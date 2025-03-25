@@ -5,8 +5,11 @@ import https from 'https';
 
 import webFonts from './fonts/webfonts.json';
 import iconFonts from './fonts/iconfonts.json';
+import { DEFAULT_ICON_FONT, DEFAULT_TEXT_FONT } from './options';
 
-export const roboto = webFonts.find((font) => font.family === 'Roboto')!;
+export const roboto = webFonts.find(
+  (font) => font.family === DEFAULT_TEXT_FONT,
+)!;
 export const materialIcons = iconFonts[0];
 
 interface FoundFont {
@@ -18,11 +21,11 @@ interface FoundFont {
 export const findFont = async (
   name: string,
   variant: string,
-  withCode: boolean,
+  isIconMode: boolean,
 ): Promise<FoundFont> => {
-  const fonts = withCode ? iconFonts : webFonts;
-  let foundItem = withCode ? materialIcons : roboto;
-  let foundFamily = withCode ? 'Material Icons' : 'Roboto';
+  const fonts = isIconMode ? iconFonts : webFonts;
+  let foundItem = isIconMode ? materialIcons : roboto;
+  let foundFamily = isIconMode ? DEFAULT_ICON_FONT : DEFAULT_TEXT_FONT;
   let foundVariant = 'Regular';
   let foundFile = foundItem.files['regular']!;
 

@@ -2,11 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-import { generateIcon } from '../src/icon_generator';
+import { renderImage } from '../src/image_renderer';
 import {
-  IconOptions,
-  DEFAULT_ICON_OPTIONS,
+  RenderOptions,
+  DEFAULT_RENDER_OPTIONS,
   DEFAULT_ITEM_OPTIONS,
+  DEFAULT_ICON_FONT,
 } from '../src/options';
 
 jest.mock('os', () => ({
@@ -48,22 +49,22 @@ if (fs.existsSync(`${os.tmpdir()}/.mojicon`)) {
   fs.rmSync(`${os.tmpdir()}/.mojicon`, { recursive: true });
 }
 
-describe('generateIcon', () => {
+describe('renderImage', () => {
   const testOutputPath = path.join(os.tmpdir(), 'test.png');
   const fixturesDir = path.join(__dirname, 'fixtures');
 
   afterEach(() => {
     if (fs.existsSync(testOutputPath)) {
-      fs.rmSync(testOutputPath);
+      //fs.rmSync(testOutputPath);
     }
   });
 
-  it('generates icon with default styles', async () => {
-    const options: IconOptions = {
-      ...DEFAULT_ICON_OPTIONS,
-      output: testOutputPath,
+  it('render image with default styles', async () => {
+    const options: RenderOptions = {
+      ...DEFAULT_RENDER_OPTIONS,
       width: 64,
       height: 64,
+      output: testOutputPath,
       items: [
         {
           ...DEFAULT_ITEM_OPTIONS,
@@ -72,7 +73,7 @@ describe('generateIcon', () => {
       ],
     };
 
-    await generateIcon(options);
+    await renderImage(options);
 
     expect(fs.existsSync(testOutputPath)).toBe(true);
 
@@ -84,23 +85,23 @@ describe('generateIcon', () => {
     expect(Buffer.compare(generatedImage, expectedImage)).toBe(0);
   });
 
-  it('generates icon with custom styles', async () => {
-    const options: IconOptions = {
-      ...DEFAULT_ICON_OPTIONS,
-      output: testOutputPath,
+  it('render image with custom styles', async () => {
+    const options: RenderOptions = {
+      ...DEFAULT_RENDER_OPTIONS,
       width: 32,
       height: 32,
+      textColor: '#00FF00',
       backgroundColor: '#F00',
       backgroundAlpha: 0.5,
-      textColor: '#00FF00',
       radius: 16,
+      output: testOutputPath,
       items: [
         {
           ...DEFAULT_ITEM_OPTIONS,
-          fontSize: 24,
+          label: 'b',
           font: 'roboto condensed',
+          fontSize: 24,
           variant: 'italic',
-          letter: 'b',
           x: 10,
           y: 5,
           angle: 45,
@@ -108,7 +109,7 @@ describe('generateIcon', () => {
       ],
     };
 
-    await generateIcon(options);
+    await renderImage(options);
 
     const generatedImage = fs.readFileSync(testOutputPath);
     const expectedImage = fs.readFileSync(
@@ -118,23 +119,24 @@ describe('generateIcon', () => {
     expect(Buffer.compare(generatedImage, expectedImage)).toBe(0);
   });
 
-  it('generate icon with code', async () => {
-    const options: IconOptions = {
-      ...DEFAULT_ICON_OPTIONS,
-      output: testOutputPath,
+  it('render image with icon font', async () => {
+    const options: RenderOptions = {
+      ...DEFAULT_RENDER_OPTIONS,
       width: 64,
       height: 64,
+      output: testOutputPath,
       items: [
         {
           ...DEFAULT_ITEM_OPTIONS,
-          font: 'Material Icons',
+          mode: 'icon',
+          label: 'search',
+          font: DEFAULT_ICON_FONT,
           fontSize: 48,
-          code: 'search',
         },
       ],
     };
 
-    await generateIcon(options);
+    await renderImage(options);
 
     expect(fs.existsSync(testOutputPath)).toBe(true);
 
@@ -144,23 +146,24 @@ describe('generateIcon', () => {
     expect(Buffer.compare(generatedImage, expectedImage)).toBe(0);
   });
 
-  it('generate default code icon with invalid code', async () => {
-    const options: IconOptions = {
-      ...DEFAULT_ICON_OPTIONS,
+  it('render with first icon for invalid label', async () => {
+    const options: RenderOptions = {
+      ...DEFAULT_RENDER_OPTIONS,
       output: testOutputPath,
       width: 64,
       height: 64,
       items: [
         {
           ...DEFAULT_ITEM_OPTIONS,
-          font: 'Material Icons',
+          mode: 'icon',
+          label: 'invalid',
+          font: DEFAULT_ICON_FONT,
           fontSize: 48,
-          code: 'invalid',
         },
       ],
     };
 
-    await generateIcon(options);
+    await renderImage(options);
 
     expect(fs.existsSync(testOutputPath)).toBe(true);
 
@@ -169,6 +172,4 @@ describe('generateIcon', () => {
 
     expect(Buffer.compare(generatedImage, expectedImage)).toBe(0);
   });
-
-  it('generate icon with json', async () => {});
 });

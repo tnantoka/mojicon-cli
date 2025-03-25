@@ -1,11 +1,11 @@
 import fs from 'fs';
 import { createCanvas, GlobalFonts } from '@napi-rs/canvas';
 
-import type { IconOptions } from './options';
+import type { RenderOptions } from './options';
 import { parseColor } from './color_parser';
 import { findFont } from './font_manager';
 
-export const generateIcon = async (options: IconOptions): Promise<void> => {
+export const renderImage = async (options: RenderOptions): Promise<void> => {
   const canvas = createCanvas(options.width, options.height);
   const ctx = canvas.getContext('2d');
 
@@ -31,7 +31,11 @@ export const generateIcon = async (options: IconOptions): Promise<void> => {
     options.items.map(async (item) => {
       ctx.save();
 
-      const font = await findFont(item.font, item.variant, !!item.code);
+      const font = await findFont(
+        item.font,
+        item.variant,
+        item.mode === 'icon',
+      );
       GlobalFonts.registerFromPath(font.path, font.label);
 
       ctx.font = `${item.fontSize}px ${font.label}`;
@@ -42,16 +46,16 @@ export const generateIcon = async (options: IconOptions): Promise<void> => {
       ctx.translate(options.width / 2 + item.x, options.height / 2 + item.y);
       ctx.rotate((item.angle * Math.PI) / 180);
 
-      if (item.code) {
+      if (item.mode === 'icon') {
         const codepoint = (
-          font.codepoints.find((c) => c.name === item.code) ??
+          font.codepoints.find((c) => c.name === item.label) ??
           font.codepoints[0]
         ).codepoint;
         const charCode = parseInt(codepoint, 16);
         const text = String.fromCodePoint(charCode);
         ctx.fillText(text, 0, 0);
       } else {
-        ctx.fillText(item.letter, 0, 0);
+        ctx.fillText(item.label, 0, 0);
       }
 
       ctx.restore();

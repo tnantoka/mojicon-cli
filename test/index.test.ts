@@ -1,14 +1,14 @@
 import { main } from '../src/index';
 
-import { generateIcon } from '../src/icon_generator';
+import { renderImage } from '../src/image_renderer';
 import {
-  DEFAULT_CODE_FONT,
-  DEFAULT_ICON_OPTIONS,
+  DEFAULT_RENDER_OPTIONS,
   DEFAULT_ITEM_OPTIONS,
+  DEFAULT_ICON_FONT,
 } from '../src/options';
 
-jest.mock('../src/icon_generator', () => ({
-  generateIcon: jest.fn().mockResolvedValue(undefined),
+jest.mock('../src/image_renderer', () => ({
+  renderImage: jest.fn().mockResolvedValue(undefined),
 }));
 
 describe('main', () => {
@@ -16,7 +16,7 @@ describe('main', () => {
     jest.clearAllMocks();
   });
 
-  it('calls generateIcon with default options with no args', async () => {
+  it('calls renderImage with default options with no args', async () => {
     const origArgv = process.argv;
 
     process.argv = ['node', 'index.js'];
@@ -24,62 +24,64 @@ describe('main', () => {
     try {
       await main();
 
-      expect(generateIcon).toHaveBeenCalledWith({
-        ...DEFAULT_ICON_OPTIONS,
+      expect(renderImage).toHaveBeenCalledWith({
+        ...DEFAULT_RENDER_OPTIONS,
       });
     } finally {
       process.argv = origArgv;
     }
   });
 
-  it('calls generateIcon with custom options', async () => {
+  it('calls renderImage with custom options', async () => {
     await main([
       'node',
       'index.js',
-      '--output',
-      'custom.png',
-      '--width',
-      '128',
-      '--height',
-      '128',
+
+      '--text-color',
+      '#00FF00',
       '--bg-color',
       '#FF0000',
       '--bg-alpha',
       '0.5',
+      '--width',
+      '128',
+      '--height',
+      '128',
+      '--radius',
+      '5',
+      '--output',
+      'custom.png',
+
+      '--mode',
+      'text',
+      '--label',
+      'B',
       '--font',
       'Roboto Condensed',
-      '--variant',
-      'Italic',
-      '--text-color',
-      '#00FF00',
-      '--letter',
-      'B',
       '--font-size',
       '64',
-      '--code',
-      'search',
+      '--variant',
+      'Italic',
       '--x',
       '10',
       '--y',
       '20',
-      '--radius',
-      '5',
       '--angle',
       '90',
     ]);
 
-    expect(generateIcon).toHaveBeenCalledWith({
-      output: 'custom.png',
+    expect(renderImage).toHaveBeenCalledWith({
       width: 128,
       height: 128,
+      textColor: '#00FF00',
       backgroundColor: '#FF0000',
       backgroundAlpha: 0.5,
-      textColor: '#00FF00',
       radius: 5,
+      output: 'custom.png',
       items: [
         {
-          letter: 'B',
-          code: 'search',
+          mode: 'text',
+          label: 'B',
           font: 'Roboto Condensed',
           fontSize: 64,
           variant: 'Italic',
@@ -91,23 +93,24 @@ describe('main', () => {
     });
   });
 
-  it('calls generateIcon with code options', async () => {
-    await main(['node', 'index.js', '--code', 'search']);
+  it('calls renderImage with icon mode', async () => {
+    await main(['node', 'index.js', '--mode', 'icon']);
 
-    expect(generateIcon).toHaveBeenCalledWith({
-      ...DEFAULT_ICON_OPTIONS,
+    expect(renderImage).toHaveBeenCalledWith({
+      ...DEFAULT_RENDER_OPTIONS,
       items: [
         {
           ...DEFAULT_ITEM_OPTIONS,
-          code: 'search',
-          font: DEFAULT_CODE_FONT,
+          mode: 'icon',
+          label: 'search',
+          font: DEFAULT_ICON_FONT,
         },
       ],
     });
   });
 
   it('handles error', async () => {
-    (generateIcon as jest.Mock).mockRejectedValueOnce(new Error('Test error'));
+    (renderImage as jest.Mock).mockRejectedValueOnce(new Error('Test error'));
 
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
     const processExitSpy = jest.spyOn(process, 'exit').mockImplementation();
