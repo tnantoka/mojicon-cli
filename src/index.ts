@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import fs from 'fs';
+
 import { Command } from 'commander';
 
 import {
@@ -79,10 +81,19 @@ export async function main(args: string[] = process.argv): Promise<void> {
         '-a, --angle [angle]',
         'Rotation angle in degrees',
         DEFAULT_ITEM_OPTIONS.angle.toString(),
-      );
+      )
+
+      // JSON
+      .option('-j, --json [filename]', 'a JSON file to configure all options')
+      .option('--sample-json', 'output a sample JSON content');
 
     program.parse(args);
     const cmdOptions = program.opts();
+
+    if (cmdOptions.sampleJson) {
+      console.log(JSON.stringify(DEFAULT_RENDER_OPTIONS, null, 2));
+      return;
+    }
 
     const width = parseInt(cmdOptions.width);
     const height = cmdOptions.height ? parseInt(cmdOptions.height) : width;
@@ -114,7 +125,9 @@ export async function main(args: string[] = process.argv): Promise<void> {
       ],
     };
 
-    await renderImage(renderOptions);
+    const jsonOptions =
+      cmdOptions.json && JSON.parse(fs.readFileSync(cmdOptions.json, 'utf8'));
+    await renderImage(jsonOptions ?? renderOptions);
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);

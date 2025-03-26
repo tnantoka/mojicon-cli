@@ -1,3 +1,7 @@
+import os from 'os';
+import path from 'path';
+import fs from 'fs';
+
 import { main } from '../src/index';
 
 import { renderImage } from '../src/image_renderer';
@@ -107,6 +111,41 @@ describe('main', () => {
         },
       ],
     });
+  });
+
+  it('calls renderImage with json', async () => {
+    const jsonPath = path.join(os.tmpdir(), 'test.json');
+    const jsonOptions = {
+      ...DEFAULT_RENDER_OPTIONS,
+      items: [
+        DEFAULT_ITEM_OPTIONS,
+        {
+          ...DEFAULT_ITEM_OPTIONS,
+          label: 'B',
+        },
+      ],
+    };
+
+    try {
+      fs.writeFileSync(jsonPath, JSON.stringify(jsonOptions));
+
+      await main(['node', 'index.js', '--json', jsonPath]);
+
+      expect(renderImage).toHaveBeenCalledWith(jsonOptions);
+    } finally {
+      fs.rmSync(jsonPath);
+    }
+  });
+
+  it('outputs sample json', async () => {
+    const consoleLogSpy = jest.spyOn(console, 'log');
+
+    await main(['node', 'index.js', '--sample-json']);
+
+    expect(renderImage).not.toHaveBeenCalled();
+    expect(consoleLogSpy).toHaveBeenCalledWith(
+      JSON.stringify(DEFAULT_RENDER_OPTIONS, null, 2),
+    );
   });
 
   it('handles error', async () => {

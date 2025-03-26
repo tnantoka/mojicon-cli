@@ -55,7 +55,7 @@ describe('renderImage', () => {
 
   afterEach(() => {
     if (fs.existsSync(testOutputPath)) {
-      //fs.rmSync(testOutputPath);
+      fs.rmSync(testOutputPath);
     }
   });
 
@@ -74,8 +74,6 @@ describe('renderImage', () => {
     };
 
     await renderImage(options);
-
-    expect(fs.existsSync(testOutputPath)).toBe(true);
 
     const generatedImage = fs.readFileSync(testOutputPath);
     const expectedImage = fs.readFileSync(
@@ -138,8 +136,6 @@ describe('renderImage', () => {
 
     await renderImage(options);
 
-    expect(fs.existsSync(testOutputPath)).toBe(true);
-
     const generatedImage = fs.readFileSync(testOutputPath);
     const expectedImage = fs.readFileSync(path.join(fixturesDir, 'search.png'));
 
@@ -165,10 +161,38 @@ describe('renderImage', () => {
 
     await renderImage(options);
 
-    expect(fs.existsSync(testOutputPath)).toBe(true);
-
     const generatedImage = fs.readFileSync(testOutputPath);
     const expectedImage = fs.readFileSync(path.join(fixturesDir, '10k.png'));
+
+    expect(Buffer.compare(generatedImage, expectedImage)).toBe(0);
+  });
+
+  it('render image with multiple items', async () => {
+    const options: RenderOptions = {
+      ...DEFAULT_RENDER_OPTIONS,
+      output: testOutputPath,
+      width: 64,
+      height: 64,
+      items: [
+        {
+          ...DEFAULT_ITEM_OPTIONS,
+          label: 'A',
+          fontSize: 48,
+          x: -16,
+        },
+        {
+          ...DEFAULT_ITEM_OPTIONS,
+          label: 'B',
+          fontSize: 48,
+          x: 16,
+        },
+      ],
+    };
+
+    await renderImage(options);
+
+    const generatedImage = fs.readFileSync(testOutputPath);
+    const expectedImage = fs.readFileSync(path.join(fixturesDir, 'items.png'));
 
     expect(Buffer.compare(generatedImage, expectedImage)).toBe(0);
   });
