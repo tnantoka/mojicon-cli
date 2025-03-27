@@ -9,6 +9,8 @@ import {
   DEFAULT_ITEM_OPTIONS,
   DEFAULT_ICON_FONT,
 } from '../src/options';
+import webFonts from './fixtures/webfonts.json';
+import iconFonts from './fixtures/iconfonts.json';
 
 jest.mock('os', () => ({
   ...jest.requireActual('os'),
@@ -30,7 +32,11 @@ jest.mock('https', () => ({
     cb({
       on: jest.fn((event, cb) => {
         if (event === 'data') {
-          if (url.includes('materialicons')) {
+          if (url.includes('webfonts.json')) {
+            cb(Buffer.from(JSON.stringify(webFonts)));
+          } else if (url.includes('iconfonts.json')) {
+            cb(Buffer.from(JSON.stringify(iconFonts)));
+          } else if (url.includes('materialicons')) {
             cb(materialIcons);
           } else if (url.includes('robotocondensed')) {
             cb(robotoCondensed);

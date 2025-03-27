@@ -3,14 +3,19 @@ import os from 'os';
 import path from 'path';
 import https from 'https';
 
-import webFonts from './fonts/webfonts.json';
-import iconFonts from './fonts/iconfonts.json';
 import { DEFAULT_ICON_FONT, DEFAULT_TEXT_FONT } from './options';
 
-export const roboto = webFonts.find(
-  (font) => font.family === DEFAULT_TEXT_FONT,
-)!;
-export const materialIcons = iconFonts[0];
+interface FontItem {
+  family: string;
+  variants: string[];
+  files: { [key: string]: string };
+  codepoints: { name: string; codepoint: string }[];
+}
+
+let webFonts: FontItem[] = [];
+let iconFonts: FontItem[] = [];
+let roboto: FontItem = { family: '', variants: [], files: {}, codepoints: [] };
+let materialIcons: FontItem = roboto;
 
 interface FoundFont {
   label: string;
@@ -23,6 +28,8 @@ export const findFont = async (
   variant: string,
   isIconMode: boolean,
 ): Promise<FoundFont> => {
+  await initFontList();
+
   const fonts = isIconMode ? iconFonts : webFonts;
   let foundItem = isIconMode ? materialIcons : roboto;
   let foundFamily = isIconMode ? DEFAULT_ICON_FONT : DEFAULT_TEXT_FONT;
@@ -56,11 +63,26 @@ export const findFont = async (
     codepoints: foundItem.codepoints,
   };
 
-  if (!fs.existsSync(foundFont.path)) {
-    await cacheFont(foundFile, foundFont.path);
-  }
+  await cacheFont(foundFile, foundFont.path);
 
   return foundFont;
+};
+
+const initFontList = async () => {
+  if (webFonts.length && iconFonts.length) {
+    return;
+  }
+
+  await cacheFontList();
+
+  webFonts = JSON.parse(
+    fs.readFileSync(path.join(getFontsDir(), 'webfonts.json'), 'utf-8'),
+  );
+  iconFonts = JSON.parse(
+    fs.readFileSync(path.join(getFontsDir(), 'iconfonts.json'), 'utf-8'),
+  );
+  roboto = webFonts.find((font) => font.family === DEFAULT_TEXT_FONT)!;
+  materialIcons = iconFonts[0];
 };
 
 const getFontsDir = () => {
@@ -85,7 +107,26 @@ const normalizeVariant = (variant: string) => {
     .replace('900', 'Black');
 };
 
-export const cacheFont = async (url: string, path: string) => {
+export const cacheFontList = async () => {
+  const dir = getFontsDir();
+  const webFontsPath = path.join(dir, 'webfonts.json');
+  const iconFontsPath = path.join(dir, 'iconfonts.json');
+
+  const rootURL = 'https://tnantoka.github.io/mojicon-cli/fonts/';
+
+  cacheFile(`${rootURL}webfonts.json`, webFontsPath);
+  cacheFile(`${rootURL}iconfonts.json`, iconFontsPath);
+};
+
+const cacheFont = async (url: string, path: string) => {
+  cacheFile(url, path);
+};
+
+const cacheFile = async (url: string, path: string) => {
+  if (fs.existsSync(path)) {
+    return;
+  }
+
   const data = await new Promise<Buffer>((resolve) => {
     https.get(url, (res) => {
       const chunks: Buffer[] = [];

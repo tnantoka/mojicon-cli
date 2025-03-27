@@ -81,9 +81,14 @@ const main = async () => {
   const { webFonts, materialIcons } = await downloadRawFiles();
 
   fs.writeFileSync(
-    './src/fonts/webfonts.json',
+    './docs/fonts/webfonts.json',
     JSON.stringify(
-      webFonts.items.map((item) => ({ ...item, codepoints: [] })),
+      webFonts.items.map((item) => ({
+        family: item.family,
+        variants: item.variants,
+        files: item.files,
+        codepoints: [],
+      })),
       null,
       2,
     ),
@@ -110,7 +115,7 @@ const main = async () => {
   });
 
   fs.writeFileSync(
-    './src/fonts/iconfonts.json',
+    './docs/fonts/iconfonts.json',
     JSON.stringify(iconFonts, null, 2),
   );
 };

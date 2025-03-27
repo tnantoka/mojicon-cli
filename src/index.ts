@@ -12,12 +12,13 @@ import {
   DEFAULT_ICON_FONT,
 } from './options';
 import { renderImage } from './image_renderer';
+import { version } from '../package.json';
 
 export async function main(args: string[] = process.argv): Promise<void> {
   try {
     const program = new Command();
     program
-      .version('0.1.0')
+      .version(version)
       .description(
         'Generate various icons with text and symbols from Google Fonts',
       )

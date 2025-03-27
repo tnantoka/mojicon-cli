@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { findFont } from '../src/font_manager';
-import iconFonts from '../src/fonts/iconfonts.json';
+import webFonts from './fixtures/webfonts.json';
+import iconFonts from './fixtures/iconfonts.json';
 
 const tmpdir = jest.requireActual('os').tmpdir();
 jest.mock('os', () => ({
@@ -18,7 +19,13 @@ jest.mock('https', () => ({
     cb({
       on: jest.fn((event, cb) => {
         if (event === 'data') {
-          cb(roboto);
+          if (url.includes('webfonts.json')) {
+            cb(Buffer.from(JSON.stringify(webFonts)));
+          } else if (url.includes('iconfonts.json')) {
+            cb(Buffer.from(JSON.stringify(iconFonts)));
+          } else {
+            cb(roboto);
+          }
         } else if (event === 'end') {
           cb();
         }
