@@ -125,9 +125,11 @@ export async function main(args: string[] = process.argv): Promise<void> {
       ],
     };
 
-    const jsonOptions =
-      cmdOptions.json && JSON.parse(fs.readFileSync(cmdOptions.json, 'utf8'));
-    await renderImage(jsonOptions ?? renderOptions);
+    await renderImage({
+      ...renderOptions,
+      ...(cmdOptions.json &&
+        JSON.parse(fs.readFileSync(cmdOptions.json, 'utf8'))),
+    });
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);

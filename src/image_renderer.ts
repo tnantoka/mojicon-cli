@@ -27,7 +27,7 @@ export const renderImage = async (options: RenderOptions): Promise<void> => {
     ctx.fillRect(0, 0, options.width, options.height);
   }
 
-  await Promise.all(
+  const usedFonts = await Promise.all(
     options.items.map(async (item) => {
       ctx.save();
 
@@ -59,6 +59,8 @@ export const renderImage = async (options: RenderOptions): Promise<void> => {
       }
 
       ctx.restore();
+
+      return font;
     }),
   );
 
@@ -66,4 +68,10 @@ export const renderImage = async (options: RenderOptions): Promise<void> => {
   fs.writeFileSync(options.output, buffer);
 
   console.log(`Icon generated successfully: ${options.output}`);
+  console.log('');
+  console.log('Used fonts:');
+  usedFonts.forEach((font, i) => {
+    const item = options.items[i];
+    console.log(`- ${item.label}: ${font.label} (requested: ${item.font})`);
+  });
 };

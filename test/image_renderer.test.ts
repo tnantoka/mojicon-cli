@@ -196,4 +196,49 @@ describe('renderImage', () => {
 
     expect(Buffer.compare(generatedImage, expectedImage)).toBe(0);
   });
+
+  it('outputs success message and used fonts', async () => {
+    const consoleLogSpy = jest.spyOn(console, 'log');
+
+    const options: RenderOptions = {
+      ...DEFAULT_RENDER_OPTIONS,
+      output: testOutputPath,
+      width: 64,
+      height: 64,
+      items: [
+        {
+          ...DEFAULT_ITEM_OPTIONS,
+          label: 'A',
+          font: 'roboto',
+          fontSize: 48,
+          x: -16,
+        },
+        {
+          ...DEFAULT_ITEM_OPTIONS,
+          mode: 'icon',
+          label: 'search',
+          font: 'material icons',
+          fontSize: 48,
+          x: 16,
+        },
+      ],
+    };
+
+    await renderImage(options);
+
+    expect(consoleLogSpy).toHaveBeenNthCalledWith(
+      1,
+      `Icon generated successfully: ${testOutputPath}`,
+    );
+    expect(consoleLogSpy).toHaveBeenNthCalledWith(2, '');
+    expect(consoleLogSpy).toHaveBeenNthCalledWith(3, 'Used fonts:');
+    expect(consoleLogSpy).toHaveBeenNthCalledWith(
+      4,
+      '- A: Roboto-Regular (requested: roboto)',
+    );
+    expect(consoleLogSpy).toHaveBeenNthCalledWith(
+      5,
+      '- search: MaterialIcons-Regular (requested: material icons)',
+    );
+  });
 });
