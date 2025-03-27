@@ -1,0 +1,19 @@
+[
+  {
+    "family": "Material Icons",
+    "variants": ["regular"],
+    "files": {
+      "regular": "https://fonts.gstatic.com/s/materialicons/v143/flUhRq6tzZclQEJ-Vdg-IuiaDsNZ.ttf"
+    },
+    "codepoints": [
+      {
+        "name": "10k",
+        "codepoint": "e951"
+      },
+      {
+        "name": "search",
+        "codepoint": "e8b6"
+      }
+    ]
+  }
+]
