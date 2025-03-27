@@ -114,12 +114,12 @@ export const cacheFontList = async () => {
 
   const rootURL = 'https://tnantoka.github.io/mojicon-cli/fonts/';
 
-  cacheFile(`${rootURL}webfonts.json`, webFontsPath);
-  cacheFile(`${rootURL}iconfonts.json`, iconFontsPath);
+  await cacheFile(`${rootURL}webfonts.json`, webFontsPath);
+  await cacheFile(`${rootURL}iconfonts.json`, iconFontsPath);
 };
 
 const cacheFont = async (url: string, path: string) => {
-  cacheFile(url, path);
+  await cacheFile(url, path);
 };
 
 const cacheFile = async (url: string, path: string) => {
