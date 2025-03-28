@@ -1,0 +1,27 @@
+{
+  "width": 256,
+  "height": 256,
+  "output": "./multi-icon.png",
+  "items": [
+    {
+      "mode": "text",
+      "label": "A",
+      "font": "Roboto",
+      "fontSize": 160,
+      "variant": "Bold",
+      "x": 0,
+      "y": 0,
+      "angle": 45
+    },
+    {
+      "mode": "icon",
+      "label": "circle",
+      "font": "Material Icons Outlined",
+      "fontSize": 256,
+      "variant": "Regular",
+      "x": 0,
+      "y": 0,
+      "angle": 0
+    }
+  ]
+}
