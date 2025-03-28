@@ -112,7 +112,7 @@ export const cacheFontList = async () => {
   const webFontsPath = path.join(dir, 'webfonts.json');
   const iconFontsPath = path.join(dir, 'iconfonts.json');
 
-  const rootURL = 'https://tnantoka.github.io/mojicon-cli/fonts/';
+  const rootURL = 'https://tnantoka.github.io/mojicon-cli/fonts/v1/';
 
   await cacheFile(`${rootURL}webfonts.json`, webFontsPath);
   await cacheFile(`${rootURL}iconfonts.json`, iconFontsPath);

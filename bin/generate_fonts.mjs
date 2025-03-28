@@ -80,8 +80,10 @@ const downloadRawFiles = async () => {
 const main = async () => {
   const { webFonts, materialIcons } = await downloadRawFiles();
 
+  const dir = './docs/fonts/v1/';
+
   fs.writeFileSync(
-    './docs/fonts/webfonts.json',
+    `${dir}webfonts.json`,
     JSON.stringify(
       webFonts.items.map((item) => ({
         family: item.family,
@@ -115,7 +117,7 @@ const main = async () => {
   });
 
   fs.writeFileSync(
-    './docs/fonts/iconfonts.json',
+    `${dir}iconfonts.json`,
     JSON.stringify(iconFonts, null, 2),
   );
 };
