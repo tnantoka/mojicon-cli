@@ -1,5 +1,7 @@
 # Mojicon CLI
 
+![](https://tnantoka.github.io/mojicon-cli/demo.gif)
+
 Mojicon is a CLI tool for creating icons using various characters and symbols with Google Fonts.
 
 This is an OSS port of [mojicon.net](https://mojicon.net/), a web service that has been running since 2018.
