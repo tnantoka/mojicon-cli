@@ -1,14 +1,19 @@
 {
   "name": "mojicon",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generate various icons with text and symbols from Google Fonts",
   "main": "./dist/index.js",
+  "bin": {
+    "mojicon": "./dist/index.js"
+  },
   "scripts": {
     "test": "jest",
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
     "lint": "eslint .",
-    "generate-fonts": "node ./bin/generate_fonts.mjs"
+    "generate-fonts": "node ./bin/generate_fonts.mjs",
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [],
   "author": "tnantoka",
