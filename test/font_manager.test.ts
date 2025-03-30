@@ -34,7 +34,9 @@ jest.mock('https', () => ({
   }),
 }));
 
-fs.rmSync(`${tmpdir}/.mojicon`, { recursive: true });
+if (fs.existsSync(`${tmpdir}/.mojicon`)) {
+  fs.rmSync(`${tmpdir}/.mojicon`, { recursive: true });
+}
 
 describe('findFont', () => {
   it('returns default font if not found', async () => {
